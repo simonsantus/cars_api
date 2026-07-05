@@ -46,3 +46,20 @@ def add_car(car: Car):
         )
     conn.commit()
     return {"message": "The car has been added to the database."}
+
+@app.get("/cars")
+def get_cars():
+    cursor.execute("""SELECT * FROM cars""")
+    cars = cursor.fetchall()
+    result = []
+    for car in cars:
+        result.append({
+            "id": car[0],
+            "brand": car[1],
+            "model": car[2],
+            "year": car[3],
+            "fuel_type": car[4],
+            "power": car[5],
+            "max_speed": car[6]
+            })
+    return result
