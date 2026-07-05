@@ -63,3 +63,19 @@ def get_cars():
             "max_speed": car[6]
             })
     return result
+
+@app.get("/cars/{car_id}")
+def get_car(car_id: int):
+    cursor.execute("""SELECT * FROM cars WHERE id = ?""", (car_id,))
+    car = cursor.fetchone()
+    if car is None:
+        return {"message": "Car not found"}
+    return {
+            "id": car[0],
+            "brand": car[1],
+            "model": car[2],
+            "year": car[3],
+            "fuel_type": car[4],
+            "power": car[5],
+            "max_speed": car[6]
+            }
