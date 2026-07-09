@@ -93,4 +93,14 @@ def update_car(car_id: int, car: Car):
         (car.brand, car.model, car.year, car.fuel_type, car.power, car.max_speed, car_id)
         )
     conn.commit()
-    return {"message": "Car was succesfully updated"}
+    return {"message": "Car was successfully updated"}
+
+@app.delete("/cars/{car_id}")
+def delete_car(car_id: int):
+    cursor.execute("""SELECT * FROM cars WHERE id = ?""", (car_id,))
+    result = cursor.fetchone()
+    if result is None:
+        return {"message": "Car not found"}
+    cursor.execute("""DELETE from cars WHERE id = ?""", (car_id,))
+    conn.commit()
+    return {"message": "Car deleted successfully"}
