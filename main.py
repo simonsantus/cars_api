@@ -79,3 +79,18 @@ def get_car(car_id: int):
             "power": car[5],
             "max_speed": car[6]
             }
+
+@app.put("/cars/{car_id}")
+def update_car(car_id: int, car: Car):
+    cursor.execute("""SELECT * FROM cars WHERE id = ?""", (car_id,))
+    result = cursor.fetchone()
+    if result is None:
+        return {"message": "Car not found"}
+    cursor.execute(
+        """UPDATE cars 
+        SET brand = ?, model = ?, year = ?, fuel_type = ?, power = ?, max_speed = ? 
+        WHERE id = ?""",
+        (car.brand, car.model, car.year, car.fuel_type, car.power, car.max_speed, car_id)
+        )
+    conn.commit()
+    return {"message": "Car was succesfully updated"}
