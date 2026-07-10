@@ -1,10 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status, HTTPException
 from database import conn, cursor
 from schemas import Car
 
 router = APIRouter()
 
-@router.post("/cars")
+@router.post("/cars", status_code=status.HTTP_201_CREATED)
 def add_car(car: Car):
     cursor.execute(
         """INSERT INTO cars
@@ -24,7 +24,7 @@ def add_car(car: Car):
     conn.commit()
     return {"message": "The car has been added to the database."}
 
-@router.get("/cars")
+@router.get("/cars", status_code=status.HTTP_200_OK)
 def get_cars():
     cursor.execute("""SELECT * FROM cars""")
     cars = cursor.fetchall()
@@ -41,12 +41,13 @@ def get_cars():
             })
     return result
 
-@router.get("/cars/{car_id}")
+@router.get("/cars/{car_id}", status_code=status.HTTP_200_OK)
 def get_car(car_id: int):
     cursor.execute("""SELECT * FROM cars WHERE id = ?""", (car_id,))
     car = cursor.fetchone()
     if car is None:
-        return {"message": "Car not found"}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        detail="Car not found")
     return {
             "id": car[0],
             "brand": car[1],
@@ -57,12 +58,13 @@ def get_car(car_id: int):
             "max_speed": car[6]
             }
 
-@router.put("/cars/{car_id}")
+@router.put("/cars/{car_id}", status_code=status.HTTP_200_OK)
 def update_car(car_id: int, car: Car):
     cursor.execute("""SELECT * FROM cars WHERE id = ?""", (car_id,))
     result = cursor.fetchone()
     if result is None:
-        return {"message": "Car not found"}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        detail="Car not found")
     cursor.execute(
         """UPDATE cars 
         SET brand = ?, model = ?, year = ?, fuel_type = ?, power = ?, max_speed = ? 
@@ -72,12 +74,13 @@ def update_car(car_id: int, car: Car):
     conn.commit()
     return {"message": "Car was successfully updated"}
 
-@router.delete("/cars/{car_id}")
+@router.delete("/cars/{car_id}", status_code=status.HTTP_200_OK)
 def delete_car(car_id: int):
     cursor.execute("""SELECT * FROM cars WHERE id = ?""", (car_id,))
     result = cursor.fetchone()
     if result is None:
-        return {"message": "Car not found"}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        detail="Car not found")
     cursor.execute("""DELETE from cars WHERE id = ?""", (car_id,))
     conn.commit()
     return {"message": "Car deleted successfully"}
