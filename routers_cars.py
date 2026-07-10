@@ -22,7 +22,7 @@ def add_car(car: Car):
         )
         )
     conn.commit()
-    return {"message": "The car has been added to the database."}
+    return {"message": "The car added successfully."}
 
 @router.get("/cars", status_code=status.HTTP_200_OK)
 def get_cars():
@@ -72,7 +72,7 @@ def update_car(car_id: int, car: Car):
         (car.brand, car.model, car.year, car.fuel_type, car.power, car.max_speed, car_id)
         )
     conn.commit()
-    return {"message": "Car was successfully updated"}
+    return {"message": "Car updated successfully"}
 
 @router.delete("/cars/{car_id}", status_code=status.HTTP_200_OK)
 def delete_car(car_id: int):
